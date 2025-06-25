@@ -42,21 +42,17 @@ namespace Miasta.Controllers
             var miasta = new List<Miasto>();
 
             using OleDbConnection connection = new OleDbConnection(connectionString);
-            string queryString = $"SELECT * FROM Miasta WHERE ID_woj = {wojId}";
+            string queryString = $"SELECT ID, Miasto, ID_woj FROM Miasta WHERE ID_woj = {wojId}";
             using OleDbCommand command = new OleDbCommand(queryString, connection);
             connection.Open();
             using OleDbDataReader reader = command.ExecuteReader();
 
             while (reader.Read())
             {
-                Console.WriteLine($"Miasto: '{reader["Miasto"]}'");
-
                 miasta.Add(new Miasto
                 {
                     ID = Convert.ToInt32(reader["ID"]),
                     Nazwa = Convert.ToString(reader["Miasto"]),
-                    Dl = Convert.ToString(reader["Dl"]),
-                    Szer = Convert.ToString(reader["Szer"]),
                     ID_Woj = Convert.ToInt32(reader["ID_woj"])
                 });
             }
@@ -70,7 +66,7 @@ namespace Miasta.Controllers
             Miasto miasto = null;
 
             using OleDbConnection connection = new OleDbConnection(connectionString);
-            string queryString = $"SELECT * FROM Miasta WHERE ID = {miastoId}";
+            string queryString = $"SELECT ID, Miasto, Dl, Szer FROM Miasta WHERE ID = {miastoId}";
             using OleDbCommand command = new OleDbCommand(queryString, connection);
             connection.Open();
             using OleDbDataReader reader = command.ExecuteReader();
@@ -79,6 +75,7 @@ namespace Miasta.Controllers
             {
                 miasto = new Miasto
                 {
+                    ID = Convert.ToInt32(reader["ID"]),
                     Nazwa = Convert.ToString(reader["Miasto"]),
                     Dl = Convert.ToString(reader["Dl"]),
                     Szer = Convert.ToString(reader["Szer"])
