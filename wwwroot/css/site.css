@@ -1,0 +1,25 @@
+body {
+    margin: 16px;
+}
+
+select {
+    padding: 5px;
+    margin: 5px 0;
+}
+
+#wynik {
+    margin-top: 20px;
+}
+
+.wybor {
+    margin-bottom: 10px;
+}
+
+.wybor label {
+    display: inline-block;
+    width: 150px;
+}
+
+.wybor select {
+    width: 250px;
+}

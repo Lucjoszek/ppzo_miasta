@@ -1,0 +1,95 @@
+﻿@model List<Miasta.Models.Wojewodztwo>
+@{
+    ViewData["Title"] = "Współrzędne miast";
+}
+
+<h3>Współrzedne miast</h3>
+
+<div class="wybor">
+    <label for="wojewodztwo">Województwa</label>
+    <select id="wojewodztwo">
+        <option>-- wybierz --</option>
+        @foreach (var woj in Model)
+        {
+            <option value="@woj.ID">@woj.Nazwa</option>
+        }
+    </select>
+</div>
+
+<div class="wybor">
+    <label for="miasto">Miasta</label>
+    <select id="miasto" disabled>
+        <option value="">-- wybierz --</option>
+    </select>
+</div>
+
+<div>
+    <button id="pokaz" disabled>Pokaż współrzędne</button>
+</div>
+
+<div id="wynik"></div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const wojewodztwoSelect = document.querySelector('#wojewodztwo')
+            const miastoSelect = document.querySelector('#miasto')
+            const pokazButton = document.querySelector('#pokaz')
+            const wynikDiv = document.querySelector('#wynik')
+
+            wojewodztwoSelect.addEventListener('change', (event) => {
+                const wojId = event.target.value
+
+                miastoSelect.setAttribute('disabled', 'true')
+                pokazButton.setAttribute('disabled', 'true')
+                wynikDiv.textContent = ""
+
+                miastoSelect.innerHTML = '<option value="">-- wybierz --</option>'
+
+                if (wojId) {
+                    fetch(`/Home/GetMiasta?wojId=${wojId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(item => {
+                                const option = document.createElement('option')
+                                option.value = item.id
+                                option.textContent = item.nazwa
+                                miastoSelect.appendChild(option)
+                            })
+
+                            if(data.length > 0) miastoSelect.removeAttribute('disabled')
+                        })
+                }
+            })
+
+            miastoSelect.addEventListener('change', (event) => {
+                const miastoId = event.target.value
+
+                wynikDiv.textContent = ""
+
+                miastoId ? pokazButton.removeAttribute('disabled') : pokazButton.setAttribute('disabled', 'true')
+            })
+
+            pokazButton.addEventListener('click', () => {
+                const wojewodztwoId = wojewodztwoSelect.value
+                const miastoId = miastoSelect.value
+
+                if(!wojewodztwoId) {
+                    wynikDiv.textContent = 'Nie wybrano województwa.'
+                    return
+                }
+
+                if(!miastoId) {
+                    wynikDiv.textContent = 'Nie wybrano miasta.'
+                    return
+                }
+
+                fetch(`/Home/GetWspolrzedne?miastoId=${miastoId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        wynikDiv.textContent = `Współrzędne miasta ${data.dl} ${data.szer}.`
+                    })
+            })
+        })
+    </script>
+}
